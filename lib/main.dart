@@ -1,43 +1,47 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/cupertino.dart';
-import 'dart:io' show Platform;
-import 'dart:math';
+import 'package:firebase_analytics/observer.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:provider/provider.dart';
+import 'screens/screens.dart';
+import 'package:quizapp/services/auth.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-          brightness: Brightness.dark,
-          primaryColor: Colors.orangeAccent,
-          textTheme: TextTheme(
-              bodyText1: TextStyle(color: Colors.orangeAccent, fontSize: 40),
-              headline1: TextStyle(color: Colors.black, fontSize: 100))),
-      home: HomeScreen(),
-    );
-  }
-}
+    return MultiProvider(
+      providers: [
+        StreamProvider<FirebaseUser>.value(value: AuthService().user)
+      ],
+      child: MaterialApp(
+        // Firebase Analytics
+        navigatorObservers: [
+          FirebaseAnalyticsObserver(analytics: FirebaseAnalytics()),
+        ],
 
-class HomeScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "get ripped",
-        ),
-      ),
-      body: Center(
-        child: FlatButton(
-          child:
-              Text("Hello Wolrd", style: Theme.of(context).textTheme.headline1),
-          color: Colors.orangeAccent,
-          onPressed: () {
-            Navigator.push(
-                context, MaterialPageRoute(builder: (context) => HomeScreen()));
-          },
+        routes: {
+          '/': (context) => LoginScreen(),
+          '/topics': (context) => TopicsScreen(),
+          '/profile': (context) => ProfileScreen(),
+          '/about': (context) => AboutScreen(),
+        },
+
+        // Theme
+        theme: ThemeData(
+          fontFamily: 'Nunito',
+          bottomAppBarTheme: BottomAppBarTheme(
+            color: Colors.black87,
+          ),
+          brightness: Brightness.dark,
+          textTheme: TextTheme(
+            body1: TextStyle(fontSize: 18),
+            body2: TextStyle(fontSize: 16),
+            button: TextStyle(letterSpacing: 1.5, fontWeight: FontWeight.bold),
+            headline: TextStyle(fontWeight: FontWeight.bold),
+            subhead: TextStyle(color: Colors.grey),
+          ),
         ),
       ),
     );
